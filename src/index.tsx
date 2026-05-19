@@ -2,6 +2,8 @@ import { render } from "preact";
 import { useEffect, useRef, useState } from "preact/hooks";
 
 import "./style.css";
+import { useInitWasm } from "./useInitWasm";
+import { greet } from "src-rust";
 
 const CONSTRAINTS: MediaStreamConstraints = {
   audio: false,
@@ -17,6 +19,8 @@ export function App() {
   const [stream, setStream] = useState<MediaStream | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const { isLoading, error: wasmErr } = useInitWasm();
 
   const getImgData = () => {
     const video = videoRef.current;
@@ -34,6 +38,11 @@ export function App() {
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
         const data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        console.log(data.data);
+
+        if (!isLoading && !wasmErr) {
+          greet("Николай");
+        }
       }
 
       requestAnimationFrame(getImgData);
@@ -58,11 +67,11 @@ export function App() {
       </div>
     );
 
-  if (err)
+  if (err || wasmErr)
     return (
       <div className="errContainer">
-        <h2>{err.name}</h2>
-        <p>{err.message}</p>
+        <h2>{err?.name || wasmErr?.name}</h2>
+        <p>{err?.message || wasmErr?.message}</p>
       </div>
     );
 

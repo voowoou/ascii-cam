@@ -11,6 +11,9 @@ importers:
       preact:
         specifier: ^10.26.9
         version: 10.29.1
+      src-rust:
+        specifier: link:src-rust\pkg
+        version: link:src-rust/pkg
     devDependencies:
       '@preact/preset-vite':
         specifier: ^2.10.2
